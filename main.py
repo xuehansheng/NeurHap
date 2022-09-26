@@ -12,7 +12,6 @@ def parser():
 	parser.add_argument('-r', '--learning_rate', type=float, default=1e-3, help='Number of learning rate.')
 	parser.add_argument('-t', '--t_max', type=int, default=10, help='Number of iterations t_max for which RUN-CSP runs on each instance')
 	parser.add_argument('-f', '--feature_size', type=int, default=32, help='Feature size for training')
-	parser.add_argument('-m', '--model_dir', type=str, default='models', help='Model directory in which the trained model is stored')
 	parser.add_argument('-d', '--data', default='Semi-Potato', help='Dataset name')
 	parser.add_argument('-s', '--sample', type=str, default='Sample1', help='Sample name')
 	parser.add_argument('-k', '--n_colors', type=int, default=4, help='Number of colors')
@@ -26,7 +25,6 @@ def parser():
 def run(args):
 	print('### Loading graphs...')
 	SNPMat = load_SNP_Fragment_Matrix(args)
-	print(SNPMat.shape)
 	posGraph,negGraph = construct_Graph(SNPMat, thres=args.threshold, ovlps=args.overlap)
 
 	print('### Generating constraints...')
@@ -38,14 +36,9 @@ def run(args):
 	assignment = model.run(instances, SNPMat)
 	model.evaluate(SNPMat, assignment)
 
-	# np.save(args.sample+'.npy', assignment)
-	# assignment = np.load(args.sample+'.npy')
-	# model.evaluate(SNPMat, assignment)
-
 	# assignment = model.refinement(SNPMat, assignment, negGraph, args.n_colors)
 	assignment = model.refine(SNPMat, assignment, negGraph, args.n_colors)
 	model.evaluate(SNPMat, assignment)
-	# eval_AgainstNegEDGs(assignment, negGraph)
 
 
 if __name__ == '__main__':

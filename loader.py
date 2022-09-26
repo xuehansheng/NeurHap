@@ -17,7 +17,6 @@ def load_SNP_Fragment_Matrix(args):
 	snp_mat = np.loadtxt(filepath)
 	return snp_mat
 
-
 def extract_NegEdges(snp_mat, thresA, thresB):
 	def hamming_distance(read, haplo):
 		overlap = (read!=0)&(haplo!=0)
@@ -41,7 +40,6 @@ def extract_NegEdges(snp_mat, thresA, thresB):
 			negEDGs.append(pairs[idx])
 	print("Edges in negGraph: %d" % len(negEDGs))
 	return negEDGs
-
 
 def construct_Graph(snp_mat, thres, ovlps):
 	def hamming_distance(read, haplo):
@@ -93,7 +91,6 @@ def refine_assignment(assignment, nodeMaps):
 		assignment_new[idx] = assignment[i]
 	return assignment_new
 
-
 def recon_haplotype(origins, SNVmatrix, n_cluster):
 	def ACGT_count(submatrix):
 		out = np.zeros((submatrix.shape[1], 4))
@@ -127,4 +124,3 @@ def MEC(SNVmatrix, Recovered_Haplo):
 		dis = [_hamming_distance(SNVmatrix[i, :], Recovered_Haplo[j, :]) for j in range(len(Recovered_Haplo))]
 		res += min(dis)
 	return res
-

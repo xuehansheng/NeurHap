@@ -7,6 +7,7 @@ import numpy as np
 import networkx as nx
 from collections import Counter
 
+
 def get_device_id(cuda_is_available):
 	if not cuda_is_available:
 		return -1
@@ -33,9 +34,7 @@ class Constraints:
 		self.relation_matrices = np.zeros((self.domain_size, self.domain_size), dtype=np.float32)
 		idx = np.array(self.relations)
 		self.relation_matrices[idx[:, 0], idx[:, 1]] = 1.0
-
 		self.confidence_matrices = np.eye(self.domain_size, dtype=np.float32)
-
 
 	@staticmethod
 	def get_colorings(d):
@@ -44,7 +43,6 @@ class Constraints:
 			return relations
 		lang = Constraints(domain_size=d, relations=get_relations(d))
 		return lang
-
 
 class CSInstance:
 	def __init__(self, adj, constraints, n_variables, conflicts, confidence):
@@ -98,12 +96,3 @@ class CSInstance:
 		has_conflict = 1.0 - valid
 		conflicts += np.sum(has_conflict)
 		return int(conflicts)
-
-def eval_AgainstNegEDGs(assignment, negGraph):
-	CNT = 0
-	for edge in negGraph.edges():
-		edgeA,edgeB = edge[0],edge[1]
-		colorA,colorB = assignment[edgeA],assignment[edgeB]
-		if colorA == colorB:
-			CNT += 1
-	print("### Number violated negGraph: {:d} (Ratio={:.4f})".format(int(CNT/2), CNT/(2*negGraph.number_of_edges())))

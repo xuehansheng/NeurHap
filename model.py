@@ -32,30 +32,26 @@ class Modeling:
 		best_conflict_ratio = 1.0
 		best_t,best_conflicts = 0,0
 		best_assignment = None
-		best_mec = 100000
 		for epoch in range(self.epochs):
 			self.model.train()
 			optimizer.zero_grad()
 
 			loss,conflict_ratio,_,_,assignment,n_conflicts = self.model(instance, self.iterations)
-			haplotypes = recon_haplotype(assignment.cpu().detach().numpy(), SNVmatrix, self.args.n_colors)
-			mec = MEC(SNVmatrix, haplotypes)
-			loss_all = loss
+			# haplotypes = recon_haplotype(assignment.cpu().detach().numpy(), SNVmatrix, self.args.n_colors)
+			# mec = MEC(SNVmatrix, haplotypes)
 			if epoch+1 == 1 or (epoch+1)%100 == 0:
-				print("Epoch: {:d} loss={:.5f}, Ratio of violated constraints={:.4f}, MEC: {:d}".format(epoch+1,loss_all.item(),conflict_ratio,mec))
+				print("Epoch: {:d} loss={:.5f}, Ratio of violated constraints={:.4f}".format(epoch+1,loss.item(),conflict_ratio))
 
-			if conflict_ratio < best_conflict_ratio or mec < best_mec:
-				torch.save(self.model.state_dict(), 'models/best_model.pkl')
+			if conflict_ratio < best_conflict_ratio:
+				torch.save(self.model.state_dict(), 'best_model.pkl')
 				best_t,best_conflict_ratio = epoch,conflict_ratio
 				best_assignment = assignment
 				best_conflicts = n_conflicts
-				best_mec = mec
 
-			loss_all.backward()
+			loss.backward()
 			optimizer.step()
 		print('Saving {:d}-th epoch, conflict ratio: {:.4f} ({:d}).'.format(best_t+1, best_conflict_ratio, int(best_conflicts/2)))
 		print("### Optimization Finished!")
-		print('### Best MEC: %d' % best_mec)
 		return best_assignment.cpu().detach().numpy()
 
 	def evaluate(self, SNPMat, assignment):
@@ -111,7 +107,6 @@ class Modeling:
 							print(best_mec)
 		return _ASSIGNMENT
 
-
 	def refine(self, SNPMat, assignment, negGraph, n_colors):
 		TAG = True
 		COLORS = set([0,1,2,3])
@@ -148,7 +143,6 @@ class Modeling:
 								TAG = True
 								# print('New MEC score:', best_mec)
 		return _ASSIGNMENT
-
 
 class NeuralModel(nn.Module):
 	def __init__(self, constraints, args, device=None):
@@ -219,7 +213,7 @@ class NeuralModel(nn.Module):
 		confidence_relation_loss = torch.sum(torch.matmul(phi_left_pos, self.confidence_tensors)*phi_right_pos, axis=1)
 		confidence_loss = -torch.log(confidence_relation_loss) #torch.Size([30, 46])
 		confidence_loss = torch.sum(confidence_loss, axis=0) #torch.Size([30])
-		loss_confidence = confidence_loss / (10*self.n_confidence) #torch.Size([30])
+		loss_confidence = confidence_loss / self.n_confidence #torch.Size([30])
 		loss_confidence = torch.sum(loss_confidence)
 
 		loss = loss_conflict + self.args.lamb*loss_confidence
@@ -238,7 +232,6 @@ class NeuralModel(nn.Module):
 		# self.conflict_ratio = n_conflicts / self.n_confidence
 		self.edge_conflicts = conflicts
 		return self.conflict_ratio, self.edge_conflicts, self.assignment[:,-1], n_conflicts
-
 
 class NeuralModelCell(nn.Module):
 	def __init__(self, feature_size, domain_size, bias=True, device=None):
@@ -271,7 +264,6 @@ class NeuralModelCell(nn.Module):
 		logits = self.decoder(states) #[240, 4]
 		return logits, states
 
-
 class MPNNLayer(nn.Module):
 	def __init__(self, feature_size):
 		super(MPNNLayer, self).__init__()
@@ -291,4 +283,3 @@ class MPNNLayer(nn.Module):
 		msg_left = h[:n_edges, :]
 		msg_right = h[n_edges:, :]
 		return msg_left, msg_right
-
