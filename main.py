@@ -36,7 +36,6 @@ def run(args):
 	assignment = model.run(instances, SNPMat)
 	model.evaluate(SNPMat, assignment)
 
-	# assignment = model.refinement(SNPMat, assignment, negGraph, args.n_colors)
 	assignment = model.refine(SNPMat, assignment, negGraph, args.n_colors)
 	model.evaluate(SNPMat, assignment)
 

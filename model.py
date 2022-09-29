@@ -62,51 +62,6 @@ class Modeling:
 		mec = MEC(SNPMat, pred_haplotypes)
 		print('### MEC: %d' % mec)
 
-	def refinement(self, SNPMat, assignment, negGraph, n_colors):
-		n_nodes = assignment.shape[0]
-		COLORS = [0,1,2,3]
-		TAG = True
-		negNeighbors = dict()
-		for val in range(n_nodes):
-			neighbors = list(negGraph.neighbors(val))
-			negNeighbors[val]=neighbors
-
-		pred_haplotypes = recon_haplotype(assignment, SNPMat, self.args.n_colors)
-		best_mec = MEC(SNPMat, pred_haplotypes)
-		_ASSIGNMENT = assignment.copy()
-
-		while TAG==True:
-			TAG = False
-			for link in negGraph.edges():
-				nodeA,nodeB = link[0],link[1]
-				colorA,colorB = assignment[nodeA],assignment[nodeB]
-				if colorA == colorB:
-					_TMP_Assign = _ASSIGNMENT.copy()
-					neigA,neigB = negNeighbors[nodeA],negNeighbors[nodeB]
-					neigAcolors = list([assignment[v] for v in neigA])
-					neigBcolors = list([assignment[v] for v in neigB])
-					_CNTneigAcolors,_CNTneigBcolors = Counter(neigAcolors),Counter(neigBcolors)
-					CNTneigAcolors,CNTneigBcolors = [_CNTneigAcolors[k] for k in range(len(_CNTneigAcolors))],[_CNTneigBcolors[k] for k in range(len(_CNTneigBcolors))]
-					if colorA in range(len(CNTneigAcolors)) and colorB in range(len(CNTneigBcolors)):
-						CNTcolorA,CNTcolorB = CNTneigAcolors[colorA],CNTneigBcolors[colorB]
-						CNTcurrentConflict = CNTcolorA+CNTcolorB
-						newColorA,newColorB = colorA,colorB
-						for i in range(len(CNTneigAcolors)):
-							for j in range(len(CNTneigBcolors)):
-								if CNTneigAcolors[i]+CNTneigBcolors[j]<CNTcurrentConflict:
-									CNTcurrentConflict = CNTneigAcolors[i]+CNTneigBcolors[j]
-									newColorA,newColorB=i,j
-						_TMP_Assign[nodeA] = newColorA
-						_TMP_Assign[nodeB] = newColorB
-						pred_haplotypes = recon_haplotype(_TMP_Assign, SNPMat, self.args.n_colors)
-						mec = MEC(SNPMat, pred_haplotypes)
-						if mec < best_mec:
-							_ASSIGNMENT = _TMP_Assign
-							best_mec = mec
-							TAG = True
-							print(best_mec)
-		return _ASSIGNMENT
-
 	def refine(self, SNPMat, assignment, negGraph, n_colors):
 		TAG = True
 		COLORS = set([0,1,2,3])
