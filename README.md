@@ -1,6 +1,6 @@
 # NeurHap
 A PyTorch implementation for the [NeurIPS-2022](https://neurips.cc/Conferences/2022) paper:<br>
-Graph Coloring via Neural Networks for Haplotype Phasing of Polyploid Species and Viral Quasispecies [[ArXiv](xxx)]<br>
+Graph Coloring via Neural Networks for Haplotype Phasing of Polyploid Species and Viral Quasispecies [[ArXiv](https://arxiv.org/abs/2210.12158)]<br>
 [Hansheng Xue](https://xuehansheng.github.io/), [Vaibhav Rajan](https://sites.google.com/view/vaibhavrajan/), and [Yu Lin](http://users.cecs.anu.edu.au/~u1024708/)
 
 ## Overview
