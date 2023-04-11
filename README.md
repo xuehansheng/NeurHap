@@ -31,9 +31,12 @@ python main.py -e 2000 -t 10 -f 32 -k 4 -r 1e-3 -p 6 -q 2 -l 0.01 -d Semi-Potato
 All readers are welcome to star/fork this repository and use it to reproduce our experiments or train your own data. Please kindly cite our paper:
 ```bibtex
 @inproceedings{Xue2022NeurHap,
-  title     = {Graph Coloring via Neural Networks for Haplotype Phasing of Polyploid Species and Viral Quasispecies},
-  author    = {Xue, Hansheng and Rajan, Vaibhav and Lin, Yu},
-  booktitle = {NeurIPS},
-  year      = {2022}
+ title = {Graph Coloring via Neural Networks for Haplotype Assembly and Viral Quasispecies Reconstruction},
+ author = {Xue, Hansheng and Rajan, Vaibhav and Lin, Yu},
+ booktitle = {Advances in Neural Information Processing Systems},
+ pages = {30898--30910},
+ volume = {35},
+ year = {2022}
 }
+
 ```
